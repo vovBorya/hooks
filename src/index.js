@@ -1,37 +1,57 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 
 const App = () => {
-  return (
-    <div>
-      <HookSwitcher />
-    </div>
+
+  const [value, setValue] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  if (visible) {
+    return (
+      <div>
+        <button onClick={() => setValue((v) => v + 1)}>+</button>
+        <button onClick={() => setVisible(false)}>hide</button>
+        <ClassCounter value={value}/>
+        <HookCounter value={value}/>
+      </div>
+    )
+  } else {
+      return <button onClick={() => setVisible(true)} >show</button>
+  }
+}
+
+const HookCounter = ({ value }) => {
+
+  //only mount
+  useEffect(() => console.log(' mount '), []);
+
+  //only update
+  useEffect(() => console.log('update'));
+
+  //only unmount
+  useEffect(() => () => console.log('unmount'), []);
+
+  return(
+    <p>{value}</p>
   )
 }
 
-const HookSwitcher = () => {
+class ClassCounter extends React.Component {
+  componentDidMount() {
+    console.log('class: mount')
+  }
 
-  const [color, setColor] = useState('black');
-  const [fontSize, setFontSize] = useState(20);
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log('class: update')
+  }
 
-  return(
-    <div style={{ padding: '10px', backgroundColor: color, fontSize: fontSize, color: 'green' }}>
-      Hello
-      <button
-        onClick={() => {
-          setColor('black')
-          setFontSize(20)
-        }}>
-        Dark
-      </button>
-      <button onClick={() => {
-        setColor('white')
-        setFontSize(12)
-      }}>
-        Light
-      </button>
-    </div>
-  )
+  componentWillUnmount() {
+    console.log('class: unmount')
+  }
+
+  render() {
+    return <p>{this.props.value}</p>
+  }
 }
 
 ReactDOM.render(
